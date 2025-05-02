@@ -15,9 +15,11 @@ public class FanCodeTests extends APITestBase {
     @Test(description = "User Completed task percentage should be greater than 50%")
     public void validateUsersCompletedTask() {
 
+        getTest().info("Get all user info");
         List<User> users = userService.getAllUsers();
 
         List<User> fanCodeUsers = users.stream().filter(CityValidator::isFanCodeCity).toList();
+        getTest().info("Get all fanCode users");
 
         for(User user : fanCodeUsers)
         {
@@ -26,8 +28,14 @@ public class FanCodeTests extends APITestBase {
             List<Todo> todoCompleted = todos.stream().filter(Todo::getCompleted).toList();
 
             double percentageCompletion = todoCompleted.size()* 100.0 / todos.size();
-
+            if(percentageCompletion>50)
+            {
+                getTest().pass(String.format("User %s has completed %.2f percent todos.",user.getName(),percentageCompletion));
+            }
+            else
+                getTest().fail(String.format("Test failed for user %s ",user.getName()));
             Assert.assertTrue(percentageCompletion>50,String.format("User '%s' has completed %.2f percent todos.",user.getName(),percentageCompletion));
+
 
         }
 
